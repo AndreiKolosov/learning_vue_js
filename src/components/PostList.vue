@@ -1,7 +1,10 @@
 <template>
   <ul class="posts-list">
-    <li v-for="post in posts">
-      <PostItem :post="post" />
+    <li v-for="post in posts" :key="post.id" v-if="posts.length > 0">
+      <PostItem :post="post" @remove="$emit('remove', post)" />
+    </li>
+    <li v-else>
+      <p class="posts__hint">Постов нет =(</p>
     </li>
   </ul>
 </template>
@@ -27,5 +30,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+.posts__hint {
+  color: green;
 }
 </style>

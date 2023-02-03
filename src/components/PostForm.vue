@@ -1,7 +1,7 @@
 <template>
   <form class="form" @submit.prevent>
     <legend class="form__legend">Создание поста</legend>
-    <input v-model="post.title" class="form__input" type="text" placeholder="Название" />
+    <Input v-model="post.title" type="text" placeholder="Название" />
     <textarea
       v-model="post.body"
       class="form__textarea"
@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import Button from './UI/Button.vue';
-
 export default {
   data() {
     return {
@@ -37,7 +35,6 @@ export default {
       };
     },
   },
-  components: { Button },
 };
 </script>
 
@@ -55,11 +52,6 @@ export default {
 .form__legend {
   font-size: 24px;
   font-weight: 600;
-}
-.form__input {
-  width: 100%;
-  height: 30px;
-  padding: 5px;
 }
 .form__textarea {
   width: 100%;

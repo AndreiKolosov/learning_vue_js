@@ -3,11 +3,13 @@
     <slot></slot>
   </button>
 </template>
+
 <script>
 export default {
-  props: {},
+  name: 'Button',
 };
 </script>
+
 <style>
 .btn {
   cursor: pointer;

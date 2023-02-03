@@ -1,16 +1,13 @@
 <template>
   <div class="post">
-    <Button type="button">Удалить</Button>
+    <Button @click="$emit('remove', post)" type="button">Удалить</Button>
     <h3 class="post__title"><strong>Название: </strong>{{ post.title }}</h3>
     <p class="post__body">{{ post.body }}</p>
   </div>
 </template>
 
 <script>
-import Button from './UI/Button.vue';
-
 export default {
-  components: { Button },
   props: {
     post: {
       type: Object,
