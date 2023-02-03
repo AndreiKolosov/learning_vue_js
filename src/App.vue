@@ -10,6 +10,17 @@
     </Dialog>
     <PostList :posts="sortedAndSearchedPosts" @remove="removePost" v-if="!isPostLoading" />
     <p v-else-if="isPostLoading">Loading ///</p>
+    <ul class="pagination">
+      <li
+        class="pagination__page"
+        v-for="pageNum in totalPages"
+        :key="pageNum"
+        :class="{ pagination__page_current: page === pageNum }"
+        @click="changePage(pageNum)"
+      >
+        <span>{{ pageNum }}</span>
+      </li>
+    </ul>
   </section>
 </template>
 
@@ -34,6 +45,9 @@ export default {
         { value: 'body', name: 'По содержанию' },
       ],
       searchQuery: '',
+      page: 1,
+      limit: 15,
+      totalPages: 0,
     };
   },
   methods: {
@@ -47,10 +61,20 @@ export default {
     openForm() {
       this.isFormVisible = true;
     },
+    changePage(pageNum) {
+      this.page = pageNum;
+    },
     async getPosts() {
       try {
-        const { data: posts } = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
-        this.posts = posts;
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+          params: {
+            _page: this.page,
+            _limit: this.limit,
+          },
+        });
+
+        this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit);
+        this.posts = response.data;
         this.isPostLoading = false;
       } catch (error) {
         alert(error.message);
@@ -71,6 +95,9 @@ export default {
     },
   },
   watch: {
+    page() {
+      this.getPosts();
+    },
     // одноименная с моделью
     // selectedSort(newValue) {
     //   this.posts.sort((post1, post2) => {
@@ -103,5 +130,28 @@ export default {
 
 .controls__open-form {
   max-width: 300px;
+}
+
+.pagination {
+  list-style: none;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 15px;
+}
+
+.pagination__page {
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
+  border: 1px solid green;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination__page_current {
+  background-color: green;
+  color: #fff;
 }
 </style>
