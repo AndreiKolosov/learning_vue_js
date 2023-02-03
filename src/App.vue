@@ -10,7 +10,8 @@
     </Dialog>
     <PostList :posts="sortedAndSearchedPosts" @remove="removePost" v-if="!isPostLoading" />
     <p v-else-if="isPostLoading">Loading ///</p>
-    <ul class="pagination">
+    <div ref="observer" class="observer"></div>
+    <!-- <ul class="pagination">
       <li
         class="pagination__page"
         v-for="pageNum in totalPages"
@@ -20,7 +21,7 @@
       >
         <span>{{ pageNum }}</span>
       </li>
-    </ul>
+    </ul> -->
   </section>
 </template>
 
@@ -46,7 +47,7 @@ export default {
       ],
       searchQuery: '',
       page: 1,
-      limit: 15,
+      limit: 7,
       totalPages: 0,
     };
   },
@@ -61,9 +62,9 @@ export default {
     openForm() {
       this.isFormVisible = true;
     },
-    changePage(pageNum) {
-      this.page = pageNum;
-    },
+    // changePage(pageNum) {
+    //   this.page = pageNum;
+    // },
     async getPosts() {
       try {
         const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
@@ -80,9 +81,40 @@ export default {
         alert(error.message);
       }
     },
+    async getMorePosts() {
+      try {
+        this.page += 1;
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+          params: {
+            _page: this.page,
+            _limit: this.limit,
+          },
+        });
+
+        this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit);
+        this.posts = [...this.posts, ...response.data];
+      } catch (error) {
+        alert(error.message);
+      }
+    },
   },
   mounted() {
     this.getPosts();
+
+    const options = {
+      rootMargin: '40px',
+      threshold: 1.0,
+    };
+
+    const callback = (entries, observer) => {
+      if (entries[0].isIntersecting && this.page < this.totalPages) {
+        this.getMorePosts();
+      }
+    };
+
+    const observer = new IntersectionObserver(callback, options);
+
+    observer.observe(this.$refs.observer);
   },
   computed: {
     sortedPosts() {
@@ -95,9 +127,9 @@ export default {
     },
   },
   watch: {
-    page() {
-      this.getPosts();
-    },
+    // page() {
+    //   this.getPosts();
+    // },
     // одноименная с моделью
     // selectedSort(newValue) {
     //   this.posts.sort((post1, post2) => {
@@ -132,7 +164,7 @@ export default {
   max-width: 300px;
 }
 
-.pagination {
+/* .pagination {
   list-style: none;
   display: flex;
   width: 100%;
@@ -153,5 +185,9 @@ export default {
 .pagination__page_current {
   background-color: green;
   color: #fff;
+} */
+
+.observer {
+  height: 30px;
 }
 </style>
