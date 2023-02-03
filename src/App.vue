@@ -1,5 +1,6 @@
 <template>
   <section class="posts-section">
+    <Input v-model="searchQuery" placeholder="Search..." />
     <div class="controls">
       <Button class="controls__open-form" @click="openForm">Создать пост</Button>
       <Select v-model="selectedSort" :options="sortOptions" />
@@ -7,7 +8,7 @@
     <Dialog v-model:show="isFormVisible">
       <PostForm @create="addPost" />
     </Dialog>
-    <PostList :posts="sortedPosts" @remove="removePost" v-if="!isPostLoading" />
+    <PostList :posts="sortedAndSearchedPosts" @remove="removePost" v-if="!isPostLoading" />
     <p v-else-if="isPostLoading">Loading ///</p>
   </section>
 </template>
@@ -32,6 +33,7 @@ export default {
         { value: 'title', name: 'По названию' },
         { value: 'body', name: 'По содержанию' },
       ],
+      searchQuery: '',
     };
   },
   methods: {
@@ -64,6 +66,9 @@ export default {
         return post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]);
       });
     },
+    sortedAndSearchedPosts() {
+      return this.sortedPosts.filter((post) => post.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
+    },
   },
   watch: {
     // одноименная с моделью
@@ -91,6 +96,7 @@ export default {
 }
 
 .controls {
+  padding: 10px;
   display: flex;
   justify-content: space-around;
 }
